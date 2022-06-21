@@ -23,7 +23,7 @@ import Swal from 'sweetalert2/dist/sweetalert2.all.min.js'
 //   },
 // ];
 
-const baseUrl = "http://localhost:5001"
+const baseUrl = "http://localhost:5000"
 
 function App() {
   const [userData,setUserData]= useState([]);
