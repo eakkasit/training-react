@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import Swal from 'sweetalert2/dist/sweetalert2.all.min.js'
+import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
+
+const baseUrl = "http://localhost:5000"
 const AddUser = (props) => {
     // training code
     //  const [enteredFullname, setEnteredFullname] = useState("");
@@ -8,17 +12,28 @@ const AddUser = (props) => {
     //  const [enteredAge, setEnteredAge] = useState("");
 
   // เปลี่ยนเป็น state เดียวเพื่อให้ง่ายต่อการจัดการ
-  const [userFormData, setUserFormData] = useState({...props.editData})
+  let param = useParams()
+  let navigation = useNavigate()
+  const [userFormData, setUserFormData] = useState({
+    fullname: "",
+    id: "",
+    age: "",
+    position: "",
+  })
 
+  const fetchEvent = async (id) => {
+    const data = await axios.get(`${baseUrl}/users/${id}`);
+    const { users } = data.data;
+    console.log('users',users);
+    setUserFormData(users);
+  };
     // เพิ่ม useEffect สำหรับจัดการค่า props ที่เปลี่ยน
   useEffect(() => {
-      setUserFormData({
-        fullname: props.editData.fullname,
-        id: props.editData.id,
-        age: props.editData.age,
-        position: props.editData.position
-      })
-  },[props.editData])
+    if(param.id !== undefined){
+      fetchEvent(param.id);
+      console.log('Edit data');
+    }
+  },[param.id])
 
   const fullnameChangeHandler = (event) => {
     // training code
@@ -50,13 +65,43 @@ const AddUser = (props) => {
     })
   };
 
+  const _addUserHandler = async (fullname, position, age, id) => {
+    // training code
+    // setUserData((prevUserData) => {
+    //   return [
+    //     ...prevUserData,
+    //     { fullname: fullname, position: position, age: age, id: Math.random().toString() },
+    //   ];
+    // });
+
+    if (id) {
+      console.log('Edit');
+      const data = await axios.put(`${baseUrl}/users/${id}`, {fullname, age, position})
+      navigation('/user')
+      // const updatedEvent = data.data.user;
+      // const updatedList = userData.map(user => {
+      //   if(user.id === id){
+      //     return user = updatedEvent
+      //   }
+      //   return user
+      // })
+      // setUserData(updatedList)
+    } else {
+      console.log('Add');
+      const data = await axios.post(`${baseUrl}/user`, {fullname, age, position})
+      navigation('/user')
+      // setUserData([...userData, data.data])
+    }
+    
+  };
+
   const addUserHandler = (event) => {
     event.preventDefault();
     // training code
     // props.onAddUser(enteredFullname, enteredPosition ,enteredAge);
 
     // เพิ่ม protection
-    if (userFormData.fullname.trim().length === 0 || userFormData.position.trim().length === 0 || userFormData.age.trim().length === 0) {
+    if (userFormData.fullname.trim().length === 0 || userFormData.position.trim().length === 0 || userFormData.age.length === 0) {
         // setError({
         //   title: 'Invalid input',
         //   message: 'Please enter a valid name and age (non-empty values).',
@@ -75,7 +120,7 @@ const AddUser = (props) => {
         return;
       }
 
-    props.onAddUser(userFormData.fullname, userFormData.position, userFormData.age, userFormData.id);
+    _addUserHandler(userFormData.fullname, userFormData.position, userFormData.age, userFormData.id);
     
     // training code
     // setEnteredFullname('');
@@ -92,13 +137,13 @@ const AddUser = (props) => {
   };
 
   const resetForm = () => {
-      
-    setUserFormData({
-        fullname: '',
-        id: '',
-        age: '',
-        position: ''
-      })
+    navigation('/user')
+    // setUserFormData({
+    //     fullname: '',
+    //     id: '',
+    //     age: '',
+    //     position: ''
+    //   })
   }
 
   return (
@@ -135,7 +180,7 @@ const AddUser = (props) => {
             />
           </Form.Group>
           <Button variant="danger" type="reset" className="m-1" onClick={resetForm}>
-            Cancel
+            Back
           </Button>
           <Button variant="primary" type="submit" className="m-1">
             Submit

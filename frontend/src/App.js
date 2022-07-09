@@ -6,6 +6,14 @@ import User from "./components/User/User";
 import { Container } from "react-bootstrap";
 import AddUser from "./components/User/AddUser";
 import Swal from 'sweetalert2/dist/sweetalert2.all.min.js'
+import { Header } from "./components/Layout/Header";
+import { Footer } from "./components/Layout/Footer";
+import { Route, Routes } from "react-router-dom";
+import { Home } from "./pages/Home";
+import { About } from "./pages/About";
+import { NotFound } from "./pages/NotFound";
+import { UserPage } from "./pages/UserPage";
+import Counter from "./components/Counter";
 
 
 // const userDataFake = [
@@ -23,92 +31,35 @@ import Swal from 'sweetalert2/dist/sweetalert2.all.min.js'
 //   },
 // ];
 
-const baseUrl = "http://localhost:5000"
+
 
 function App() {
-  const [userData,setUserData]= useState([]);
-  // เพิ่มตัวแปรเพื่อ set ค่า default ของ user form
-  const [userEditData,setEditUserData]= useState({
-    fullname: '',
-    id: '',
-    age: '',
-    position: '',
-  });
   
-  const addUserHandler = async (fullname, position, age, id) => {
-    // training code
-    // setUserData((prevUserData) => {
-    //   return [
-    //     ...prevUserData,
-    //     { fullname: fullname, position: position, age: age, id: Math.random().toString() },
-    //   ];
-    // });
-
-    if (id) {
-      console.log('Edit');
-      const data = await axios.put(`${baseUrl}/users/${id}`, {fullname, age, position})
-      const updatedEvent = data.data.user;
-      const updatedList = userData.map(user => {
-        if(user.id === id){
-          return user = updatedEvent
-        }
-        return user
-      })
-      setUserData(updatedList)
-    } else {
-      console.log('Add');
-      const data = await axios.post(`${baseUrl}/user`, {fullname, age, position})
-      setUserData([...userData, data.data])
-    }
-    
-  };
-
-  const fetchEvent = async () => {
-    const data = await axios.get(`${baseUrl}/users`)
-    const { users } = data.data
-    setUserData(users)
-  }
-
-  useEffect(() => {
-    fetchEvent();
-  },[])
-
-  const handleEdit = (user) => {
-    setEditUserData({
-      fullname:user.fullname,
-      id:user.id,
-      age:user.age,
-      position:user.position
-    })
-  }
-
-  const handleDelete = async (id) => {
-    try {
-      await Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be delete this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-           axios.delete(`${baseUrl}/users/${id}`)
-          const updatedList = userData.filter(user => user.id !== id)
-          setUserData(updatedList);
-        }
-      })
-     
-    } catch (error) {
-      console.error(error.message)
-    }
-  }
 
   return (
     <Container fluid>
-      <AddUser onAddUser={addUserHandler} editData={userEditData}  />
-      <User user={userData} onDelete={handleDelete} onEditData={handleEdit}/>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />}></Route>
+        <Route path="/about" element={<About />}></Route>
+        <Route path="/user" element={<User />}>
+          {/* <Route path=":name"  element={<UserPage />}/> */}
+          {/* <Route path="new"  element={<AddUser />}/>
+          <Route path="edit"  element={<AddUser />}>
+            <Route path=":id"  element={<AddUser />}/>
+          </Route> */}
+        </Route>
+        <Route path="/user/new" element={<AddUser />} />
+        <Route path="/user/edit" element={<AddUser />}>
+          <Route path=":id" element={<AddUser />}/>
+        </Route>
+        <Route path="*" element={<NotFound />}></Route>
+      </Routes>
+      <Counter />
+      <Footer />
+
+      {/* <AddUser onAddUser={addUserHandler} editData={userEditData}  />
+      <User user={userData} onDelete={handleDelete} onEditData={handleEdit}/> */}
     </Container>
   );
 }
