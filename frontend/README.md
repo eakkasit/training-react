@@ -19,5 +19,19 @@
 
 "npm start" or "yarn start"
 
+## Router
+
+"npm install react-router-dom"
+
+## Redux
+"npm install @reduxjs/toolkit react-redux"
+
+## Deployment
+- "npm install env-cmd" for run build from env file
+- add basename="relative path" BrowserRoute in index.js ( ```<BrowserRouter basename="relative path">``` )
+- add home_page to relative path in packgage.json (  "homepage": "/path" )
+- npm run build 
+- copy to server
+
 ## Note
 Please check baseUrl is file App.js it's must be like backend url

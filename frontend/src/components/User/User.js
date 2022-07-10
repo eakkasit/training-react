@@ -1,29 +1,14 @@
 import React, { useState, useEffect } from "react";
-// import UserList from "./UserList";
 import { Row, Col, Button } from "react-bootstrap";
 import axios from 'axios';
 import Swal from 'sweetalert2/dist/sweetalert2.all.min.js'
 import { useNavigate } from "react-router-dom";
 
 const baseUrl = "http://localhost:5000"
-const User = (props) => {
-  // const handleDelete = (id) => {
-  //   props.onDelete(id);
-  // };
-
-  // const handleEdit = (user) => {
-  //   props.onEditData(user);
-  // };
+const User = () => {
 
   const [userData,setUserData]= useState([]);
   let navigation = useNavigate()
-  // เพิ่มตัวแปรเพื่อ set ค่า default ของ user form
-  const [userEditData,setEditUserData]= useState({
-    fullname: '',
-    id: '',
-    age: '',
-    position: '',
-  });
   
   const fetchEvent = async () => {
     const data = await axios.get(`${baseUrl}/users`)
@@ -36,12 +21,6 @@ const User = (props) => {
   },[])
 
   const handleEdit = (id) => {
-    // setEditUserData({
-    //   fullname:user.fullname,
-    //   id:user.id,
-    //   age:user.age,
-    //   position:user.position
-    // })
     navigation(`/user/edit/${id}`)
   }
 
